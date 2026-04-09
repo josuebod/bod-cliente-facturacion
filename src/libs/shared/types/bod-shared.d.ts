@@ -2,7 +2,7 @@ import * as _angular_core from '@angular/core';
 import { PipeTransform, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import * as _angular_forms from '@angular/forms';
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, FormGroup } from '@angular/forms';
 import { Subscription, Subject, Observable } from 'rxjs';
 import { MenuItem, FilterMetadata, Confirmation, ToastMessageOptions } from 'primeng/api';
 import { TableLazyLoadEvent, Table } from 'primeng/table';
@@ -130,6 +130,39 @@ declare class FormFieldValidationErrors implements OnDestroy, OnInit {
     static ɵcmp: _angular_core.ɵɵComponentDeclaration<FormFieldValidationErrors, "bod-form-field-validation-errors", never, { "control": { "alias": "control"; "required": true; "isSignal": true; }; "customMessages": { "alias": "customMessages"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
+declare enum DisplayMode {
+    DARK_MODE = "dark-mode",
+    LIGHT_MODE = "light-mode"
+}
+
+declare enum LoadState {
+    IDLE = "idle",
+    LOADING = "loading",
+    EMPTY = "empty",
+    ERROR = "error",
+    SUCCESS = "success"
+}
+
+declare class LoadStateHandler {
+    readonly loadState: _angular_core.InputSignal<LoadState>;
+    readonly retryFn: _angular_core.InputSignal<(() => void) | undefined>;
+    readonly backFn: _angular_core.InputSignal<(() => void) | undefined>;
+    readonly emptyText: _angular_core.InputSignal<string>;
+    readonly errorText: _angular_core.InputSignal<string>;
+    readonly loadingText: _angular_core.InputSignal<string>;
+    readonly goBackText: _angular_core.InputSignal<string>;
+    readonly retryText: _angular_core.InputSignal<string>;
+    protected readonly isLoading: _angular_core.Signal<boolean>;
+    protected readonly isSuccess: _angular_core.Signal<boolean>;
+    protected readonly isError: _angular_core.Signal<boolean>;
+    protected readonly isEmpty: _angular_core.Signal<boolean>;
+    readonly display: _angular_core.InputSignal<"simple" | "full">;
+    readonly onRetry: () => void;
+    readonly onBack: () => void;
+    static ɵfac: _angular_core.ɵɵFactoryDeclaration<LoadStateHandler, never>;
+    static ɵcmp: _angular_core.ɵɵComponentDeclaration<LoadStateHandler, "bod-load-state-handler", never, { "loadState": { "alias": "loadState"; "required": true; "isSignal": true; }; "retryFn": { "alias": "retryFn"; "required": false; "isSignal": true; }; "backFn": { "alias": "backFn"; "required": false; "isSignal": true; }; "emptyText": { "alias": "emptyText"; "required": false; "isSignal": true; }; "errorText": { "alias": "errorText"; "required": false; "isSignal": true; }; "loadingText": { "alias": "loadingText"; "required": false; "isSignal": true; }; "goBackText": { "alias": "goBackText"; "required": false; "isSignal": true; }; "retryText": { "alias": "retryText"; "required": false; "isSignal": true; }; "display": { "alias": "display"; "required": false; "isSignal": true; }; }, {}, never, ["*"], true, never>;
+}
+
 declare class LoadingIndicator {
     readonly size: _angular_core.InputSignal<number>;
     static ɵfac: _angular_core.ɵɵFactoryDeclaration<LoadingIndicator, never>;
@@ -197,27 +230,6 @@ declare class ThemeToggleButton {
     static ɵcmp: _angular_core.ɵɵComponentDeclaration<ThemeToggleButton, "bod-theme-toggle-button", never, { "isDark": { "alias": "isDark"; "required": false; "isSignal": true; }; }, { "toggleTheme": "toggleTheme"; }, never, never, true, never>;
 }
 
-declare enum ViewState {
-    IDLE = "idle",
-    LOADING = "loading",
-    EMPTY = "empty",
-    ERROR = "error",
-    SUCCESS = "success"
-}
-declare class ViewStateHandler {
-    state: _angular_core.InputSignal<ViewState>;
-    skeletonTemplate: _angular_core.InputSignal<TemplateRef<unknown> | undefined>;
-    isLoading: _angular_core.Signal<boolean>;
-    isEmpty: _angular_core.Signal<boolean>;
-    isError: _angular_core.Signal<boolean>;
-    isSuccess: _angular_core.Signal<boolean>;
-    isIdle: _angular_core.Signal<boolean>;
-    goBackFunction: _angular_core.InputSignal<(() => void) | undefined>;
-    retryFunction: _angular_core.InputSignal<(() => void) | undefined>;
-    static ɵfac: _angular_core.ɵɵFactoryDeclaration<ViewStateHandler, never>;
-    static ɵcmp: _angular_core.ɵɵComponentDeclaration<ViewStateHandler, "bod-view-state-handler", never, { "state": { "alias": "state"; "required": false; "isSignal": true; }; "skeletonTemplate": { "alias": "skeletonTemplate"; "required": false; "isSignal": true; }; "goBackFunction": { "alias": "goBackFunction"; "required": false; "isSignal": true; }; "retryFunction": { "alias": "retryFunction"; "required": false; "isSignal": true; }; }, {}, never, ["*"], true, never>;
-}
-
 interface AuthUser {
     username: string;
     userId: number;
@@ -229,9 +241,9 @@ interface AuthUser {
 declare class Endpoint {
     readonly path: string;
     readonly method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD';
-    readonly version?: "v1" | "v2" | "v3" | undefined;
     readonly baseUrl: string;
-    constructor(path: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD', version?: "v1" | "v2" | "v3" | undefined, baseUrl?: string);
+    readonly version?: "v1" | "v2" | "v3" | undefined;
+    constructor(path: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD', baseUrl: string, version?: "v1" | "v2" | "v3" | undefined);
     toString(): string;
 }
 
@@ -320,19 +332,6 @@ interface PaginatorOptions<T> {
     fetchData(request: PaginationRequest): Observable<Pagination<T>>;
 }
 
-declare enum DisplayMode {
-    DARK_MODE = "dark-mode",
-    LIGHT_MODE = "light-mode"
-}
-
-declare enum LoadState {
-    IDLE = "idle",
-    LOADING = "loading",
-    EMPTY = "empty",
-    ERROR = "error",
-    SUCCESS = "success"
-}
-
 declare class DataSourcePaginator<T> {
     private _items;
     private _totalCount;
@@ -401,6 +400,48 @@ declare class DataSourcePaginator<T> {
      */
     private handleError;
 }
+
+declare class DataTableBuilder<T extends object> {
+    private readonly fetchVistas;
+    private readonly fetchColumnas;
+    private readonly fetchData;
+    constructor(params: {
+        fetchVistas: () => Observable<PaginatedVista[]>;
+        fetchColumnas: (uuid: string) => Observable<PaginatedVistaColumn[]>;
+        fetchData: (request: PaginationRequest) => Observable<Pagination<T>>;
+    });
+    build(): Observable<{
+        vistas: PaginatedVista[];
+        columnas: PaginatedVistaColumn[];
+        paginator: DataSourcePaginator<T>;
+    }>;
+}
+
+/**
+ * Opciones para obtener solo los valores modificados de un formulario.
+ */
+interface GetDirtyFormValueOptions {
+    /**
+     * Claves a excluir del resultado (p. ej. campos que solo aplican en creación).
+     */
+    excludeKeys?: string[];
+}
+/**
+ * Devuelve un objeto solo con los valores de los controles que están "dirty"
+ * (modificados por el usuario). Pensado para armar payloads de actualización
+ * sin enviar campos que no cambiaron.
+ *
+ * - En FormControl: se incluye el valor si el control está dirty.
+ * - En FormGroup: se recorre recursivamente y se incluyen solo controles dirty.
+ * - En FormArray: si el array está dirty se incluye su valor completo.
+ *
+ * Reutilizable en cualquier formulario que use Reactive Forms.
+ *
+ * @param form FormGroup del que extraer valores
+ * @param options Opciones (excluir claves, etc.)
+ * @returns Objeto con solo las propiedades cuyos controles están dirty
+ */
+declare function getDirtyFormValue(form: FormGroup, options?: GetDirtyFormValueOptions): Record<string, unknown>;
 
 declare function shouldShowValidationErrors(control: AbstractControl): boolean;
 
@@ -488,6 +529,8 @@ declare class DataTable<T extends object> {
     readonly rowActionClicked: _angular_core.OutputEmitterRef<T | null>;
     readonly visibleRowActions: _angular_core.Signal<MenuItem[]>;
     readonly visibleRowActionsLength: _angular_core.Signal<number>;
+    readonly rowActionsTemplate: _angular_core.Signal<TemplateRef<unknown> | undefined>;
+    readonly captionTemplate: _angular_core.Signal<TemplateRef<unknown> | undefined>;
     /** Altura del scroll del body (p. ej. '500px'). Por defecto '500px' */
     readonly scrollHeight: _angular_core.InputSignal<string>;
     /** Opciones de filas por página */
@@ -497,7 +540,7 @@ declare class DataTable<T extends object> {
     onRowActionClick(menuItem: MenuItem, event: MouseEvent, row: T): void;
     filterGlobal(value: string, matchMode: string): void;
     static ɵfac: _angular_core.ɵɵFactoryDeclaration<DataTable<any>, never>;
-    static ɵcmp: _angular_core.ɵɵComponentDeclaration<DataTable<any>, "bod-data-table", never, { "dataSource": { "alias": "dataSource"; "required": true; "isSignal": true; }; "columns": { "alias": "columns"; "required": false; "isSignal": true; }; "showActionsColumn": { "alias": "showActionsColumn"; "required": false; "isSignal": true; }; "rowActions": { "alias": "rowActions"; "required": false; "isSignal": true; }; "scrollHeight": { "alias": "scrollHeight"; "required": false; "isSignal": true; }; "rowsPerPageOptions": { "alias": "rowsPerPageOptions"; "required": false; "isSignal": true; }; }, { "rowActionClicked": "rowActionClicked"; }, never, ["[caption]"], true, never>;
+    static ɵcmp: _angular_core.ɵɵComponentDeclaration<DataTable<any>, "bod-data-table", never, { "dataSource": { "alias": "dataSource"; "required": true; "isSignal": true; }; "columns": { "alias": "columns"; "required": false; "isSignal": true; }; "showActionsColumn": { "alias": "showActionsColumn"; "required": false; "isSignal": true; }; "rowActions": { "alias": "rowActions"; "required": false; "isSignal": true; }; "scrollHeight": { "alias": "scrollHeight"; "required": false; "isSignal": true; }; "rowsPerPageOptions": { "alias": "rowsPerPageOptions"; "required": false; "isSignal": true; }; }, { "rowActionClicked": "rowActionClicked"; }, ["rowActionsTemplate", "captionTemplate"], never, true, never>;
 }
 
 declare class AuthState {
@@ -623,5 +666,5 @@ declare const ACCESS_TOKEN_KEY = "access-token";
 
 declare const GLOBAL_TOAST_KEY = "global-toast";
 
-export { ACCESS_TOKEN_KEY, AuthState, CONFIRM_CHANGES_DIALOG_KEY, CONFIRM_DIALOG_KEY, ConfirmService, DISPLAY_MODE_KEY, DataSourcePaginator, DataTable, DisplayMode, EmptyMessage, Endpoint, FormDialog, FormDialogWrapper, FormField, FormFieldControl, FormFieldHint, FormFieldLabel, FormFieldValidationErrors, GLOBAL_TOAST_KEY, LANGUAGE_KEY, LegacyDataSourcePaginator, LoadState, LoadingIndicator, LocalizedDatePipe, LocalizedKeysPipe, MenuItemsLocalizer, PaginationFilterOperation, PanelPageHeader, TableToolbar, ThemeService, ThemeToggleButton, ToastService, VIEWPORT_BREAKPOINTS, ViewState, ViewStateHandler, ViewportService, shouldShowValidationErrors };
-export type { AuthUser, Column, LegacyPagination, LegacyPaginationFilter, LegacyPaginationRequest, LegacyPaginationRequestFilter, LegacyPaginationRequestOrder, LegacyPaginatorOptions, MultiSortMeta, PaginatedVista, PaginatedVistaColumn, Pagination, PaginationFilter, PaginationRequest, PaginationRequestOrder, PaginatorOptions, ViewportBreakpoint };
+export { ACCESS_TOKEN_KEY, AuthState, CONFIRM_CHANGES_DIALOG_KEY, CONFIRM_DIALOG_KEY, ConfirmService, DISPLAY_MODE_KEY, DataSourcePaginator, DataTable, DataTableBuilder, DisplayMode, EmptyMessage, Endpoint, FormDialog, FormDialogWrapper, FormField, FormFieldControl, FormFieldHint, FormFieldLabel, FormFieldValidationErrors, GLOBAL_TOAST_KEY, LANGUAGE_KEY, LegacyDataSourcePaginator, LoadState, LoadStateHandler, LoadingIndicator, LocalizedDatePipe, LocalizedKeysPipe, MenuItemsLocalizer, PaginationFilterOperation, PanelPageHeader, TableToolbar, ThemeService, ThemeToggleButton, ToastService, VIEWPORT_BREAKPOINTS, ViewportService, getDirtyFormValue, shouldShowValidationErrors };
+export type { AuthUser, Column, GetDirtyFormValueOptions, LegacyPagination, LegacyPaginationFilter, LegacyPaginationRequest, LegacyPaginationRequestFilter, LegacyPaginationRequestOrder, LegacyPaginatorOptions, MultiSortMeta, PaginatedVista, PaginatedVistaColumn, Pagination, PaginationFilter, PaginationRequest, PaginationRequestOrder, PaginatorOptions, ViewportBreakpoint };

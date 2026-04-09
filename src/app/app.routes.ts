@@ -4,6 +4,6 @@ import { ExamplePage } from './pages';
 export const routes: Routes = [
   {
     path: '',
-    component: ExamplePage
-  }
+    loadComponent: () => import('./pages').then((m) => m.ClienteFacturas),
+  },
 ];

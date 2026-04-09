@@ -1,2 +1,1 @@
 export * from './cliente-facturas';
-export * from './example-page';

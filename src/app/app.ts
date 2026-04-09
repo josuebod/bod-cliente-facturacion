@@ -5,8 +5,8 @@ import { RouterOutlet } from '@angular/router';
   selector: 'bod-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {
-  protected readonly title = signal('bod-mfe-template');
+  protected readonly title = signal('bod-cliente-facturacion');
 }

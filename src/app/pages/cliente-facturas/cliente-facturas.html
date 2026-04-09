@@ -1,0 +1,21 @@
+<bod-panel-page-header [title]="'Cliente Facturas'" [actions]="pageActions()" />
+
+@if (paginator(); as _paginator) {
+  <bod-data-table #dt [dataSource]="_paginator" [columns]="columnas()" [showActionsColumn]="true">
+    <ng-template #rowActions let-row>
+      @if (row.estadoFacturaNombre === 'PENDIENTE') {
+        <p-button label="PAGAR" (onClick)="createPago(row)" />
+      }
+      <!-- <p-button icon="pi pi-ellipsis-h" text rounded (onClick)="menu.toggle($event)" /> -->
+      <!-- <p-menu #menu [popup]="true" [model]="createClientMenuItems(row)" [appendTo]="'body'" /> -->
+    </ng-template>
+    <ng-template #caption>
+      <bod-table-toolbar
+        (searchChange)="dt.filterGlobal($event, 'contains')"
+        [vistas]="vistas()"
+        [selectedVista]="_paginator.uuidVista() ?? null"
+        (selectedVistaChange)="onVistaChange($event)"
+      />
+    </ng-template>
+  </bod-data-table>
+}
