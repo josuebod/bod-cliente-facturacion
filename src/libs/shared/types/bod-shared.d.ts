@@ -284,7 +284,9 @@ interface LegacyPaginatorOptions<T> {
     fetchData(request: LegacyPaginationRequest): Observable<LegacyPagination<T>>;
 }
 
-type PaginationFilter = Record<string, FilterMetadata | FilterMetadata[] | undefined>;
+type PaginationFilter = {
+    [key: string]: FilterMetadata | FilterMetadata[] | undefined;
+};
 interface MultiSortMeta {
     field: string;
     order: number;
@@ -375,7 +377,7 @@ declare class DataSourcePaginator<T> {
      * Construye un PaginationRequest según el modelo del API (first, rows, parametros, ordenes, filtros).
      * first = índice del primer registro de la página; rows = tamaño de página (alineado con PrimeNG TableLazyLoadEvent).
      */
-    private buildRequest;
+    buildRequest(): PaginationRequest;
     refresh(): void;
     /**
      * Get current items value from BehaviorSubject
