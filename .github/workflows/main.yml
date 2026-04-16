@@ -1,0 +1,26 @@
+name: Deploy Cliente Facturación (st7)
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: shell-st7
+      cancel-in-progress: true
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: stg.blueopendata.com
+          username: root
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            cd /home
+            bash deployer.sh blue-crm-front-cliente-facturacion || true
+
