@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { ENDPOINTS } from '@core/config/endpoints';
-import { CreatePagoRequest, CreatePagoResponse } from '@core/models/cobranza';
+import { ENDPOINTS } from '../config/endpoints';
+import { CreatePagoRequest, CreatePagoResponse } from '../models/cobranza';
 import { Observable } from 'rxjs';
 
 @Injectable({

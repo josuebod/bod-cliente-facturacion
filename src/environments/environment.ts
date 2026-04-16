@@ -1,4 +1,4 @@
 export const environment = {
-  isProduction: false,
+  isProduction: true,
   apiBaseUrl: 'https://erp.blueopendata.com/api',
 };

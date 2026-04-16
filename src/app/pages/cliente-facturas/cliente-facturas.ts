@@ -11,10 +11,9 @@ import {
   Pagination,
 } from '@bod/shared';
 import { MenuItem } from 'primeng/api';
-import { FacturacionApi } from '../../core/api';
+import { FacturacionApi, CobranzasApi } from '../../core/api';
 import { ClienteFactura } from '../../core/models';
 import { ButtonModule } from 'primeng/button';
-import { CobranzasApi } from '@core/api/cobranzas-api';
 
 @Component({
   selector: 'bod-cliente-facturas',

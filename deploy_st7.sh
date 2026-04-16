@@ -34,8 +34,6 @@ if [ ! -f "${properties_env}" ]; then
   exit 1
 fi
 
-cp "${properties_env}" "${properties_file}"
-
 echo "-NPM Install"
 
 sudo npm install
@@ -43,11 +41,11 @@ sudo npm install
 echo "-Build"
 
 if [ -z "$path" ]; then
-  sudo ng build --base-href /
+  sudo ng build -c $env --base-href /
 else
   base="${path#/}"
   base="${base%/}"
-  sudo ng build --base-href "/${base}/"
+  sudo ng build -c $env --base-href "/${base}/"
 fi
 
 if [ -d "$dist_folder" ]; then
