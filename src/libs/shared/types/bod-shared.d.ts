@@ -577,6 +577,8 @@ declare class DataTable<T extends object> {
     private isRowActionVisible;
     private getRowActions;
     splitRowActions(row: T): RowActionsSplit<T>;
+    /** Indica si la fila tiene al menos una acción visible (útil en vista tarjetas). */
+    rowHasActions(row: T): boolean;
     buildRowActionsMenu(row: T): MenuItem[];
     /** Se usa para decidir si renderizar la columna "Acciones". */
     readonly hasAnyRowActions: _angular_core.Signal<boolean>;
