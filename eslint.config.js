@@ -6,6 +6,9 @@ const angular = require("angular-eslint");
 
 module.exports = defineConfig([
   {
+    ignores: ["src/libs/**"],
+  },
+  {
     files: ["**/*.ts"],
     extends: [
       eslint.configs.recommended,

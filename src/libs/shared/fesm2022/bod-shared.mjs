@@ -1,6 +1,6 @@
 import { DatePipe, CommonModule, NgTemplateOutlet, TitleCasePipe, CurrencyPipe, isPlatformBrowser } from '@angular/common';
 import * as i0 from '@angular/core';
-import { inject, ChangeDetectorRef, DestroyRef, Pipe, input, computed, ChangeDetectionStrategy, Component, output, signal, contentChild, effect, Directive, contentChildren, viewChild, Injectable, DOCUMENT, PLATFORM_ID } from '@angular/core';
+import { inject, ChangeDetectorRef, DestroyRef, Pipe, input, computed, ChangeDetectionStrategy, Component, output, signal, contentChild, effect, TemplateRef, Directive, contentChildren, viewChild, Injectable, DOCUMENT, PLATFORM_ID } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import * as i1 from '@ngx-translate/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
@@ -36,7 +36,6 @@ import * as i8 from 'primeng/select';
 import { SelectModule } from 'primeng/select';
 import * as i2$1 from 'primeng/table';
 import { Table, TableModule } from 'primeng/table';
-import { Chip } from 'primeng/chip';
 import * as i4$1 from 'primeng/selectbutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import * as i5$1 from 'primeng/dataview';
@@ -293,6 +292,8 @@ class DataSourcePaginator {
         this.loadData(1);
     }
     applyGlobalSearch(value, columns) {
+        void value;
+        void columns;
         // this.applyFilters('globalSearch', {});
     }
     applyVista(uuid) {
@@ -1024,12 +1025,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.5", ngImpor
  * `<ng-template bodDataTableCell="items" let-row let-column="column"> ... </ng-template>`
  */
 class DataTableCellTemplateDirective {
-    templateRef;
     bodDataTableCell = input.required(...(ngDevMode ? [{ debugName: "bodDataTableCell" }] : /* istanbul ignore next */ []));
-    constructor(templateRef) {
-        this.templateRef = templateRef;
-    }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.5", ngImport: i0, type: DataTableCellTemplateDirective, deps: [{ token: i0.TemplateRef }], target: i0.ɵɵFactoryTarget.Directive });
+    templateRef = inject((TemplateRef));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.5", ngImport: i0, type: DataTableCellTemplateDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "21.2.5", type: DataTableCellTemplateDirective, isStandalone: true, selector: "ng-template[bodDataTableCell]", inputs: { bodDataTableCell: { classPropertyName: "bodDataTableCell", publicName: "bodDataTableCell", isSignal: true, isRequired: true, transformFunction: null } }, ngImport: i0 });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.5", ngImport: i0, type: DataTableCellTemplateDirective, decorators: [{
@@ -1038,7 +1036,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.5", ngImpor
                     selector: 'ng-template[bodDataTableCell]',
                     standalone: true,
                 }]
-        }], ctorParameters: () => [{ type: i0.TemplateRef }], propDecorators: { bodDataTableCell: [{ type: i0.Input, args: [{ isSignal: true, alias: "bodDataTableCell", required: true }] }] } });
+        }], propDecorators: { bodDataTableCell: [{ type: i0.Input, args: [{ isSignal: true, alias: "bodDataTableCell", required: true }] }] } });
 
 /**
  * Contrato mínimo que debe cumplir la fuente de datos de la tabla
@@ -1077,11 +1075,11 @@ class DataTable {
     /** Opciones de filas por página */
     rowsPerPageOptions = input([10, 20, 50], ...(ngDevMode ? [{ debugName: "rowsPerPageOptions" }] : /* istanbul ignore next */ []));
     dt = viewChild(Table, ...(ngDevMode ? [{ debugName: "dt" }] : /* istanbul ignore next */ []));
-    isRowActionVisible(action, row) {
+    isRowActionVisible(action) {
         return action.visible !== false;
     }
     getRowActions(row) {
-        return (this.rowActionsBuilder()?.(row) ?? []).filter((a) => this.isRowActionVisible(a, row));
+        return (this.rowActionsBuilder()?.(row) ?? []).filter((a) => this.isRowActionVisible(a));
     }
     splitRowActions(row) {
         const actions = this.getRowActions(row);
@@ -1130,7 +1128,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.5", ngImpor
                         TableModule,
                         TitleCasePipe,
                         NgTemplateOutlet,
-                        Chip,
                         DatePipe,
                         LoadStateHandler,
                         CurrencyPipe,
@@ -1240,6 +1237,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.5", ngImpor
 class ThemeService {
     currentDisplayMode = signal(DisplayMode.LIGHT_MODE, ...(ngDevMode ? [{ debugName: "currentDisplayMode" }] : /* istanbul ignore next */ []));
     document = inject(DOCUMENT);
+    _onDisplayModeChange$ = new Subject();
+    onDisplayModeChange$ = this._onDisplayModeChange$.asObservable();
     isDark = computed(() => this.currentDisplayMode() === DisplayMode.DARK_MODE, ...(ngDevMode ? [{ debugName: "isDark" }] : /* istanbul ignore next */ []));
     /**
      * Load theme from storage or use default
@@ -1275,6 +1274,7 @@ class ThemeService {
         localStorage.setItem(DISPLAY_MODE_KEY, displayMode);
         console.log(`Display mode applied: ${displayMode}`);
         this.currentDisplayMode.set(displayMode);
+        this._onDisplayModeChange$.next(displayMode);
     }
     /**
      * Toggle between light and dark themes

@@ -3,6 +3,7 @@ import { PipeTransform, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import * as _angular_forms from '@angular/forms';
 import { AbstractControl, FormGroup } from '@angular/forms';
+import * as rxjs from 'rxjs';
 import { Subscription, Subject, Observable } from 'rxjs';
 import { MenuItem, FilterMetadata, MenuItemCommandEvent, Confirmation, ToastMessageOptions } from 'primeng/api';
 import { TableLazyLoadEvent, Table } from 'primeng/table';
@@ -285,9 +286,7 @@ interface LegacyPaginatorOptions<T> {
     fetchData(request: LegacyPaginationRequest): Observable<LegacyPagination<T>>;
 }
 
-type PaginationFilter = {
-    [key: string]: FilterMetadata | FilterMetadata[] | undefined;
-};
+type PaginationFilter = Record<string, FilterMetadata | FilterMetadata[] | undefined>;
 interface MultiSortMeta {
     field: string;
     order: number;
@@ -523,9 +522,8 @@ declare class LegacyDataSourcePaginator<T> {
  * `<ng-template bodDataTableCell="items" let-row let-column="column"> ... </ng-template>`
  */
 declare class DataTableCellTemplateDirective<T = unknown> {
-    readonly templateRef: TemplateRef<T>;
     readonly bodDataTableCell: _angular_core.InputSignal<string>;
-    constructor(templateRef: TemplateRef<T>);
+    readonly templateRef: TemplateRef<any>;
     static ɵfac: _angular_core.ɵɵFactoryDeclaration<DataTableCellTemplateDirective<any>, never>;
     static ɵdir: _angular_core.ɵɵDirectiveDeclaration<DataTableCellTemplateDirective<any>, "ng-template[bodDataTableCell]", never, { "bodDataTableCell": { "alias": "bodDataTableCell"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
 }
@@ -540,10 +538,10 @@ interface RowAction<T extends object> extends Omit<MenuItem, 'command'> {
     badge?: string;
     command: (event: MenuItemCommandEvent) => void;
 }
-type RowActionsSplit<T extends object> = {
+interface RowActionsSplit<T extends object> {
     visible: RowAction<T>[];
     overflow: RowAction<T>[];
-};
+}
 /**
  * Contrato mínimo que debe cumplir la fuente de datos de la tabla
  * (p. ej. DataSourcePaginator de @bod/shared).
@@ -555,11 +553,11 @@ declare class DataTable<T extends object> {
     readonly columns: _angular_core.InputSignal<PaginatedVistaColumn[]>;
     /** Modo de visualización: tabla o cards. */
     readonly viewMode: _angular_core.WritableSignal<"table" | "cards">;
-    readonly viewModeOptions: Array<{
+    readonly viewModeOptions: {
         label: string;
         value: 'table' | 'cards';
         icon: string;
-    }>;
+    }[];
     /** Si se muestra la columna de acciones (primera columna). Por defecto true */
     readonly showActionsColumn: _angular_core.InputSignal<boolean>;
     readonly rowActionsBuilder: _angular_core.InputSignal<(row: T) => RowAction<T>[]>;
@@ -628,6 +626,8 @@ declare class MenuItemsLocalizer {
 declare class ThemeService {
     private currentDisplayMode;
     private document;
+    private readonly _onDisplayModeChange$;
+    readonly onDisplayModeChange$: rxjs.Observable<DisplayMode>;
     isDark: _angular_core.Signal<boolean>;
     /**
      * Load theme from storage or use default

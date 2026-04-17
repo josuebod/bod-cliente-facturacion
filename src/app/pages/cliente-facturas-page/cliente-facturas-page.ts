@@ -3,12 +3,10 @@ import {
   DataSourcePaginator,
   DataTable,
   DataTableBuilder,
-  PanelPageHeader,
   PaginatedVista,
   PaginatedVistaColumn,
   TableToolbar,
   PaginationRequest,
-  Pagination,
   RowAction,
 } from '@bod/shared';
 import { MenuItem } from 'primeng/api';
@@ -42,7 +40,7 @@ export class ClienteFacturasPage implements OnInit {
     },
   ];
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.loadVistas();
   }
 
